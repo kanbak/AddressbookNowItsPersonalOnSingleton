@@ -8,9 +8,10 @@
 
 #import "ShowViewController.h"
 #import "EditViewController.h"
-#import "EditDelegate.h"
+#import "AppDelegate.h"
+#import "ViewController.h"
 
-@interface ShowViewController ()
+@interface ShowViewController () <UINavigationControllerDelegate>
 {
     __weak IBOutlet UILabel *firstNameLabel;
     __weak IBOutlet UILabel *lastNameLabel;
@@ -21,11 +22,12 @@
 @end
 
 @implementation ShowViewController
+@synthesize person;
 
-@synthesize firstNameString;
-@synthesize lastNameString;
-@synthesize emailAddressString;
-@synthesize phoneNumberString;
+-(void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if ([viewController isKindOfClass:[ViewController class]]){
+    }
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,33 +40,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    firstNameLabel.text= firstNameString;
-    lastNameLabel.text= lastNameString;
-    emailAddressLabel.text= emailAddressString;
-    phoneNumberLabel.text=phoneNumberString;
+    firstNameLabel.text = person.firstName;
+    lastNameLabel.text = person.lastName;
+    emailAddressLabel.text = person.emailAddress;
+    phoneNumberLabel.text = person.phoneNumber;
+    self.navigationItem.title=[NSString stringWithFormat:@"%@ %@", person.firstName, person.lastName];
+    self.navigationController.delegate = self;
 }
 
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     editViewController = segue.destinationViewController;
-    editViewController.delegate=self;
-    
+    editViewController.person=person;
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark EditDelegate
-
--(void)updateFirst:(NSString *)firstName updateLast:(NSString *)lastName updateEmail:(NSString *)email updateNumber:(NSString *)phoneNumber{
-    firstNameLabel.text=firstName;
-    lastNameLabel.text=lastName;
-    emailAddressLabel.text=email;
-    phoneNumberLabel.text=phoneNumber;
-    
-    
 }
 
 @end

@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EditDelegate.h"
-@interface ShowViewController : UIViewController <EditDelegate>
+#import "AppDelegate.h"
+#import "Person.h"
 
-@property (strong, nonatomic) NSString *firstNameString;
-@property (strong, nonatomic) NSString *lastNameString;
-@property (strong, nonatomic) NSString *emailAddressString;
-@property (strong, nonatomic) NSString *phoneNumberString;
+
+@interface ShowViewController : UIViewController 
+
+@property (strong, nonatomic) Person *person;
 
 @end

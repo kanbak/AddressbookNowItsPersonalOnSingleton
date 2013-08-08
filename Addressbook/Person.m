@@ -2,16 +2,18 @@
 //  Person.m
 //  Addressbook
 //
-//  Created by Umut Kanbak on 7/22/13.
+//  Created by Umut Kanbak on 8/7/13.
 //  Copyright (c) 2013 Umut Kanbak. All rights reserved.
 //
 
 #import "Person.h"
 
+
 @implementation Person
-@synthesize firstName;
-@synthesize lastName;
-@synthesize emailAddress;
-@synthesize phoneNumber;
+
+@dynamic firstName;
+@dynamic lastName;
+@dynamic emailAddress;
+@dynamic phoneNumber;
 
 @end

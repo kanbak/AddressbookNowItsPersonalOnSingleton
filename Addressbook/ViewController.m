@@ -9,17 +9,23 @@
 #import "ViewController.h"
 #import "Person.h"
 #import "ShowViewController.h"
-#import "EditDelegate.h"
+#import "EditViewController.h"
+#import "AppDelegate.h"
 
 @interface ViewController ()
 {
     NSMutableArray *people;
-    int path;
+    int rowNumber;
     __weak IBOutlet UITableView *myTableView;
+    __weak IBOutlet UIBarButtonItem *addButtonOutlet;
+    NSManagedObjectContext* managedObjectContext;
+    NSMutableArray* coreDataPeople;
+    NSFileManager *fileManager;
+    NSURL *documentsDirectory;
+    NSFetchedResultsController* fetchedResultController;
 }
-/*
-- (IBAction)setEditMode:(UIBarButtonItem *)sender;
-*/
+- (IBAction)addButton:(id)sender;
+
 @end
 
 @implementation ViewController
@@ -28,45 +34,55 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self=[super initWithCoder:aDecoder]) {
-        Person *person1 = [[Person alloc]init];
-        Person *person2 = [[Person alloc]init];
-        Person *person3 = [[Person alloc]init];
-        Person *person4 = [[Person alloc]init];
         
-        person1.firstName = @"Brian";
-        person1.lastName = @"Dinh";
-        person1.emailAddress = @"brian@dinh.com";
-        person1.phoneNumber = @"999-99-9999";
-        
-        person2.firstName = @"Umut";
-        person2.lastName = @"Kanbak";
-        person2.emailAddress = @"umut@kanbak.com";
-        person2.phoneNumber = @"666-66-6666";
-        
-        person3.firstName = @"Some";
-        person3.lastName = @"Person";
-        person3.emailAddress = @"some@person.com";
-        person3.phoneNumber = @"777-77-7777";
-        
-        person4.firstName = @"Another";
-        person4.lastName = @"Person";
-        person4.emailAddress = @"another@person.com";
-        person4.phoneNumber = @"555-55-5555";
-        
-        people = [[NSMutableArray alloc]initWithObjects:person1, person2, person3, person4, nil];}
-    
+        managedObjectContext = ((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
+        self.navigationItem.title=@"AddressBook";
+    }
     return self;
 }
 - (void)viewDidLoad
 {
+    managedObjectContext = ((AppDelegate *)[UIApplication sharedApplication].delegate).managedObjectContext;
+    people = [[NSMutableArray alloc] initWithCapacity:25];
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;//editing mode button
+    [self fetchFromCoreData];
+    people = [NSMutableArray arrayWithArray:fetchedResultController.fetchedObjects];
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
 }
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self fetchFromCoreData];
+    people = [NSMutableArray arrayWithArray:fetchedResultController.fetchedObjects];
+    [myTableView reloadData];
+}
+-(void)fetchFromCoreData{
+    NSSortDescriptor* sortDescriptorlastName;
+    NSSortDescriptor* sortDescriptorfirstName;
+    NSArray* sortsDescriptors;
+    NSError *error;
+    fileManager = [NSFileManager defaultManager];
+    documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSEntityDescription* entityDescription = [NSEntityDescription entityForName:@"Person" inManagedObjectContext:managedObjectContext];
+    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
+    
+    sortDescriptorlastName = [[NSSortDescriptor alloc] initWithKey:@"lastName" ascending:YES];
+    sortDescriptorfirstName= [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
+    sortsDescriptors = [[NSArray alloc] initWithObjects:sortDescriptorlastName, sortDescriptorfirstName, nil];
+    
+    [fetchRequest setEntity:entityDescription];
+    [fetchRequest setSortDescriptors:sortsDescriptors];
+    
+    fetchedResultController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    
+    [fetchedResultController performFetch:&error];
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {//editing mode
     [super setEditing:editing animated:animated];
     [myTableView setEditing:editing animated:animated];
 }
- 
+
 - (IBAction)setEditMode:(UIBarButtonItem *)sender {
     if (self.editing) {
         sender.title = @"Edit";
@@ -84,7 +100,7 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark UITableviewDataSource
+#pragma mark tableViewModifications
 
 -(int)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -92,32 +108,47 @@
 }
 -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    Person *person=[people objectAtIndex:indexPath.row];
+    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"myIdentifier"];
     
     if (cell==nil) {
         cell=[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier: @"myIdentifier"];}
-        
-        cell.textLabel.text=[[people objectAtIndex:indexPath.row]lastName];
-        cell.detailTextLabel.text=[[people objectAtIndex:indexPath.row]firstName];
-    return cell;    
+    
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", person.firstName, person.lastName];
+    cell.detailTextLabel.text = person.emailAddress;
+    return cell;
 }
 
 -(int)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [people count];
 }
-
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    ShowViewController *showViewController = segue.destinationViewController;
+    Person *selectedPerson = [people objectAtIndex:rowNumber];
+    showViewController.person = selectedPerson;
+}
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    path=indexPath.row;
+    rowNumber = indexPath.row;
     [self performSegueWithIdentifier:@"showView" sender:self];
 }
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if (editingStyle==UITableViewCellEditingStyleDelete){
+       //delete from database
+        [managedObjectContext deleteObject:[people objectAtIndex:indexPath.row]];
+        NSError *error = nil;
+        if (![managedObjectContext save:&error]) {
+            NSLog(@"Can't Delete! %@ %@", error, [error localizedDescription]);
+            return;
+        }
+/////////////
         [people removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }else if (editingStyle==UITableViewCellEditingStyleInsert){
-        [people  insertObject:@"Uninitialized" atIndex:indexPath.row];
+        [people  insertObject:@"newPerson" atIndex:indexPath.row];
         [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
     }
 }
@@ -125,13 +156,8 @@
     return UITableViewCellEditingStyleDelete;
 }
 
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    ShowViewController *showViewController = segue.destinationViewController;
-    showViewController.firstNameString=[[people objectAtIndex:path]firstName];
-    showViewController.lastNameString=[[people objectAtIndex:path]lastName];
-    showViewController.emailAddressString=[[people objectAtIndex:path]emailAddress];
-    showViewController.phoneNumberString=[[people objectAtIndex:path]phoneNumber];
+- (IBAction)addButton:(id)sender {
+    [self performSegueWithIdentifier:@"toAddView" sender:self];
+    
 }
-
 @end
