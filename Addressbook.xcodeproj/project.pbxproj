@@ -10,6 +10,7 @@
 		553B537217B2D5A600DEF3E7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 553B537117B2D5A600DEF3E7 /* CoreData.framework */; };
 		553B537517B2D5BC00DEF3E7 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 553B537317B2D5BC00DEF3E7 /* Model.xcdatamodeld */; };
 		553B537817B2D67F00DEF3E7 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 553B537717B2D67F00DEF3E7 /* Person.m */; };
+		5546B5C417B422A700E79C42 /* MySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 5546B5C317B422A700E79C42 /* MySingleton.m */; };
 		55D41F2A179DAA1800F62AE7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D41F29179DAA1800F62AE7 /* UIKit.framework */; };
 		55D41F2C179DAA1800F62AE7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D41F2B179DAA1800F62AE7 /* Foundation.framework */; };
 		55D41F2E179DAA1800F62AE7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 55D41F2D179DAA1800F62AE7 /* CoreGraphics.framework */; };
@@ -31,6 +32,8 @@
 		553B537417B2D5BC00DEF3E7 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		553B537617B2D67F00DEF3E7 /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
 		553B537717B2D67F00DEF3E7 /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
+		5546B5C217B422A700E79C42 /* MySingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MySingleton.h; sourceTree = "<group>"; };
+		5546B5C317B422A700E79C42 /* MySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MySingleton.m; sourceTree = "<group>"; };
 		55D41F26179DAA1800F62AE7 /* Addressbook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Addressbook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		55D41F29179DAA1800F62AE7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		55D41F2B179DAA1800F62AE7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -106,6 +109,8 @@
 				553B537717B2D67F00DEF3E7 /* Person.m */,
 				55D41F38179DAA1800F62AE7 /* AppDelegate.h */,
 				55D41F39179DAA1800F62AE7 /* AppDelegate.m */,
+				5546B5C217B422A700E79C42 /* MySingleton.h */,
+				5546B5C317B422A700E79C42 /* MySingleton.m */,
 				55D41F41179DAA1800F62AE7 /* MainStoryboard.storyboard */,
 				55ED914717B32C0D00DFD54D /* AddViewController.h */,
 				55ED914817B32C0D00DFD54D /* AddViewController.m */,
@@ -208,6 +213,7 @@
 				553B537517B2D5BC00DEF3E7 /* Model.xcdatamodeld in Sources */,
 				553B537817B2D67F00DEF3E7 /* Person.m in Sources */,
 				55ED914917B32C0D00DFD54D /* AddViewController.m in Sources */,
+				5546B5C417B422A700E79C42 /* MySingleton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

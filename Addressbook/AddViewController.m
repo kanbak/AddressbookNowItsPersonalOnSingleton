@@ -9,6 +9,8 @@
 #import "AddViewController.h"
 #import "AppDelegate.h"
 #import "Person.h"
+#import "MySingleton.h"
+
 
 @interface AddViewController ()
 {
@@ -46,15 +48,15 @@
 }
 
 - (IBAction)savePerson:(id)sender {
-    NSManagedObjectContext *managedObjectContext=((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
+    //NSManagedObjectContext *managedObjectContext=[MySingleton sharedInstance].managedObjectContext;
     NSError *error;
-    person = [NSEntityDescription insertNewObjectForEntityForName: @"Person" inManagedObjectContext: managedObjectContext];
+    person = [NSEntityDescription insertNewObjectForEntityForName: @"Person" inManagedObjectContext: [MySingleton sharedInstance].managedObjectContext];
     person.firstName=firstNameTextField.text;
     person.lastName=lastNameTextField.text;
     person.emailAddress=emailAddressTextField.text;
     person.phoneNumber=phoneNumberTextField.text;
     
-    if (![managedObjectContext save:&error]) {
+    if (![[MySingleton sharedInstance].managedObjectContext save:&error]) {
         NSLog(@"Error:%@",error);
         
     }

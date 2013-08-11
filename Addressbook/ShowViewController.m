@@ -10,6 +10,8 @@
 #import "EditViewController.h"
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "MySingleton.h"
+
 
 @interface ShowViewController () <UINavigationControllerDelegate>
 {

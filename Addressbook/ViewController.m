@@ -11,6 +11,7 @@
 #import "ShowViewController.h"
 #import "EditViewController.h"
 #import "AppDelegate.h"
+#import "MySingleton.h"
 
 @interface ViewController ()
 {
@@ -20,9 +21,9 @@
     __weak IBOutlet UIBarButtonItem *addButtonOutlet;
     NSManagedObjectContext* managedObjectContext;
     NSMutableArray* coreDataPeople;
-    NSFileManager *fileManager;
-    NSURL *documentsDirectory;
-    NSFetchedResultsController* fetchedResultController;
+ //   NSFileManager *fileManager;
+  //  NSURL *documentsDirectory;
+ NSFetchedResultsController* fetchedResultController;
 }
 - (IBAction)addButton:(id)sender;
 
@@ -34,48 +35,29 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self=[super initWithCoder:aDecoder]) {
-        
-        managedObjectContext = ((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
+        managedObjectContext=[MySingleton sharedInstance].managedObjectContext;
         self.navigationItem.title=@"AddressBook";
     }
     return self;
 }
 - (void)viewDidLoad
 {
-    managedObjectContext = ((AppDelegate *)[UIApplication sharedApplication].delegate).managedObjectContext;
+    managedObjectContext=[MySingleton sharedInstance].managedObjectContext;
     people = [[NSMutableArray alloc] initWithCapacity:25];
     [super viewDidLoad];
-    [self fetchFromCoreData];
+    [[MySingleton sharedInstance]fetchFromCoreData];
+    
     people = [NSMutableArray arrayWithArray:fetchedResultController.fetchedObjects];
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
 
 }
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self fetchFromCoreData];
+    [[MySingleton sharedInstance]fetchFromCoreData];
     people = [NSMutableArray arrayWithArray:fetchedResultController.fetchedObjects];
     [myTableView reloadData];
-}
--(void)fetchFromCoreData{
-    NSSortDescriptor* sortDescriptorlastName;
-    NSSortDescriptor* sortDescriptorfirstName;
-    NSArray* sortsDescriptors;
-    NSError *error;
-    fileManager = [NSFileManager defaultManager];
-    documentsDirectory = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    NSEntityDescription* entityDescription = [NSEntityDescription entityForName:@"Person" inManagedObjectContext:managedObjectContext];
-    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     
-    sortDescriptorlastName = [[NSSortDescriptor alloc] initWithKey:@"lastName" ascending:YES];
-    sortDescriptorfirstName= [[NSSortDescriptor alloc] initWithKey:@"firstName" ascending:YES];
-    sortsDescriptors = [[NSArray alloc] initWithObjects:sortDescriptorlastName, sortDescriptorfirstName, nil];
-    
-    [fetchRequest setEntity:entityDescription];
-    [fetchRequest setSortDescriptors:sortsDescriptors];
-    
-    fetchedResultController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-    
-    [fetchedResultController performFetch:&error];
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {//editing mode
@@ -138,18 +120,18 @@
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
     if (editingStyle==UITableViewCellEditingStyleDelete){
        //delete from database
-        [managedObjectContext deleteObject:[people objectAtIndex:indexPath.row]];
+        [[MySingleton sharedInstance].managedObjectContext deleteObject:[people objectAtIndex:indexPath.row]];
         NSError *error = nil;
-        if (![managedObjectContext save:&error]) {
+        if (![[MySingleton sharedInstance].managedObjectContext save:&error]) {
             NSLog(@"Can't Delete! %@ %@", error, [error localizedDescription]);
             return;
         }
 /////////////
         [people removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }else if (editingStyle==UITableViewCellEditingStyleInsert){
-        [people  insertObject:@"newPerson" atIndex:indexPath.row];
-        [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
+   // }else if (editingStyle==UITableViewCellEditingStyleInsert){
+        //[people  insertObject:@"newPerson" atIndex:indexPath.row];
+       // [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
     }
 }
 -(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{

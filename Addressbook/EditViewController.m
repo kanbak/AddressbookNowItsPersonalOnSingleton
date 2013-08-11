@@ -8,6 +8,7 @@
 
 #import "EditViewController.h"
 #import "AppDelegate.h"
+#import "MySingleton.h"
 
 
 @interface EditViewController ()
@@ -39,7 +40,7 @@
 
 - (void)viewDidLoad
 {
-     managedObjectContext = ((AppDelegate *)[UIApplication sharedApplication].delegate).managedObjectContext;
+    managedObjectContext=[MySingleton sharedInstance].managedObjectContext;
     [super viewDidLoad];
     firstNameTextField.text=person.firstName;
     lastNameTextField.text=person.lastName;
@@ -58,14 +59,14 @@
 
 - (IBAction)updateTextFields:(id)sender {
     
-    managedObjectContext=((AppDelegate*)[UIApplication sharedApplication].delegate).managedObjectContext;
+    //managedObjectContext=[MySingleton sharedInstance].managedObjectContext;
     NSError *error;
     person.firstName=firstNameTextField.text;
     person.lastName=lastNameTextField.text;
     person.emailAddress=emailAddressTextField.text;
     person.phoneNumber=phoneNumberTextField.text;
     
-    if (![managedObjectContext save:&error]) {
+    if (![[MySingleton sharedInstance].managedObjectContext save:&error]) {
         NSLog(@"Error:%@",error);
     }
 

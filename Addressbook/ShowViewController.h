@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import "Person.h"
+#import "MySingleton.h"
 
 
 @interface ShowViewController : UIViewController 

@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import "Person.h"
+#import "MySingleton.h"
+
 
 @interface EditViewController : UIViewController 
 @property (strong, nonatomic) Person *person;
